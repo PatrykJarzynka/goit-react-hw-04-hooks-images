@@ -2,7 +2,7 @@
   "name": "goit-react-hw-03-image-finder",
   "version": "0.1.0",
   "private": true,
-  "homepage": "https://patrykjarzynka.github.io/goit-react-hw-03-image-finder/",
+  "homepage": "https://patrykjarzynka.github.io/goit-react-hw-04-hooks-images/",
   "dependencies": {
     "@emotion/react": "^11.8.1",
     "@emotion/styled": "^11.8.1",
