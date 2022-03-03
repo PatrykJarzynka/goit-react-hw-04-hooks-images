@@ -1,5 +1,5 @@
 import './App.css';
-import { Component, useState } from 'react';
+import {useState } from 'react';
 import Searchbar from './components/Searchbar';
 import ImageGallery from './components/ImageGallery';
 import styled from '@emotion/styled';

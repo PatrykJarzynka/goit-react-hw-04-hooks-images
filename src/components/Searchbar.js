@@ -1,4 +1,4 @@
-import { Component, useState } from 'react';
+import {useState } from 'react';
 import Notiflix from 'notiflix';
 import styled from '@emotion/styled';
 import { ImSearch } from 'react-icons/im';

@@ -1,4 +1,4 @@
-import { Component, useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import imageAPI from '../services/pixabay';
 import ImageGalleryItem from './ImageGalleryItem.js';
 import Button from './Button';
@@ -10,16 +10,21 @@ import PropTypes from 'prop-types';
 
 let page = 1;
 
+const Jinx = styled.div({
+  display: 'flex',
+  alignItems: 'center',
+  flexDirection: 'column',
+});
+
 const FancyGallery = styled.ul({
   display: 'flex',
   flexDirection: 'row',
   flexWrap: 'wrap',
-  justifyContent: 'space-between',
+  justifyContent: 'center',
   padding: '0px 20px',
   rowGap: '20px',
   columnGap: '20px',
   listStyle: 'none',
-  justifyContent: 'center',
 });
 
 const FancyLoader = styled.div({
@@ -118,17 +123,15 @@ function ImageGallery(props) {
       {isModalShow === true && (
         <div>
           <Modal url={bigUrl} onClick={hideBigPicture} />
-          <FancyGallery className="gallery">
-            {pictures}
-            <Button onClick={event => handleClick(event, props.name)} />
-          </FancyGallery>
+          <FancyGallery className="gallery">{pictures}</FancyGallery>
+          <Button onClick={event => handleClick(event, props.name)} />
         </div>
       )}
       {apiState.isSucces() && isModalShow === false && (
-        <FancyGallery className="gallery">
-          {pictures}
+        <Jinx>
+          <FancyGallery className="gallery">{pictures}</FancyGallery>
           <Button onClick={event => handleClick(event, props.name)} />
-        </FancyGallery>
+        </Jinx>
       )}
     </div>
   );
