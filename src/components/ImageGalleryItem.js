@@ -14,22 +14,16 @@ const FancyImg = styled.img({
   cursor: 'pointer',
 });
 
-class ImageGalleryItem extends Component {
-  state = {
-    isClicked: false,
+function ImageGalleryItem(props) {
+  const handleClick = () => {
+    props.showBigPicture(props.bigImg);
   };
 
-  handleClick = () => {
-    this.props.showBigPicture(this.props.bigImg);
-  };
-
-  render() {
-    return (
-      <FancyItem className="gallery-item" onClick={this.handleClick}>
-        <FancyImg src={this.props.url} alt="picture" />
-      </FancyItem>
-    );
-  }
+  return (
+    <FancyItem className="gallery-item" onClick={handleClick}>
+      <FancyImg src={props.url} alt="picture" />
+    </FancyItem>
+  );
 }
 
 ImageGalleryItem.propTypes = {
