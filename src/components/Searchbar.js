@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, useState } from 'react';
 import Notiflix from 'notiflix';
 import styled from '@emotion/styled';
 import { ImSearch } from 'react-icons/im';
@@ -41,48 +41,44 @@ const FancyButton = styled.button({
   borderRadius: 3,
 });
 
-class Searchbar extends Component {
-  state = {
-    name: '',
-  };
+function Searchbar(props) {
+  const [name, setName] = useState('');
 
-  handleSubmit = event => {
+  const handleSubmit = event => {
     event.preventDefault();
-    if (this.state.name.trim() === '') {
+    if (name.trim() === '') {
       Notiflix.Notify.warning('Enter something dude');
       return;
     }
-    this.props.onSubmit(this.state.name);
-    this.setState({ name: '' });
+    props.onSubmit(name);
+    setName('');
   };
 
-  handleChange = event => {
-    this.setState({ name: event.currentTarget.value.toLowerCase() });
+  const handleChange = event => {
+    setName(event.currentTarget.value.toLowerCase());
   };
 
-  render() {
-    return (
-      <FancySearch className="searchbar">
-        <form className="form" onSubmit={this.handleSubmit}>
-          <FancyButton type="submit" className="button">
-            <span className="button-label">
-              <ImSearch />
-            </span>
-          </FancyButton>
+  return (
+    <FancySearch className="searchbar">
+      <form className="form" onSubmit={handleSubmit}>
+        <FancyButton type="submit" className="button">
+          <span className="button-label">
+            <ImSearch />
+          </span>
+        </FancyButton>
 
-          <FancyInput
-            onChange={this.handleChange}
-            value={this.state.name}
-            className="input"
-            type="text"
-            autoComplete="off"
-            autoFocus
-            placeholder="Search images and photos"
-          />
-        </form>
-      </FancySearch>
-    );
-  }
+        <FancyInput
+          onChange={handleChange}
+          value={name}
+          className="input"
+          type="text"
+          autoComplete="off"
+          autoFocus
+          placeholder="Search images and photos"
+        />
+      </form>
+    </FancySearch>
+  );
 }
 
 Searchbar.propTypes = {

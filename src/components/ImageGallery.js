@@ -50,7 +50,6 @@ function ImageGallery(props) {
 
     async function fetchImages() {
       try {
-        console.log(props.name)
         apiState.pending();
         let fetchedData = await imageAPI.fetchImages(props.name, page);
         setData(fetchedData.hits);
