@@ -46,7 +46,7 @@ function ImageGallery(props) {
   };
 
   useEffect(() => {
-    if (!props.name) return
+    if (!props.name) return;
 
     async function fetchImages() {
       try {

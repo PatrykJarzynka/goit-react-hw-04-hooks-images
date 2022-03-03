@@ -1,5 +1,5 @@
 import './App.css';
-import { Component } from 'react';
+import { Component, useState } from 'react';
 import Searchbar from './components/Searchbar';
 import ImageGallery from './components/ImageGallery';
 import styled from '@emotion/styled';
@@ -11,23 +11,19 @@ const FancyApp = styled.div({
   paddingBottom: '24px',
 });
 
-class App extends Component {
-  state = {
-    name: '',
+function App(props) {
+  const [name, setName] = useState('');
+
+  const handleFormSubmit = name => {
+    setName(name);
   };
 
-  handleFormSubmit = name => {
-    this.setState({ name: name });
-  };
-
-  render() {
-    return (
-      <FancyApp>
-        <Searchbar onSubmit={this.handleFormSubmit} />
-        <ImageGallery name={this.state.name} />
-      </FancyApp>
-    );
-  }
+  return (
+    <FancyApp>
+      <Searchbar onSubmit={handleFormSubmit} />
+      <ImageGallery name={name} />
+    </FancyApp>
+  );
 }
 
 export default App;
