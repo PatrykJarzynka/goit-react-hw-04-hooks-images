@@ -1,4 +1,4 @@
-import { Component } from 'react';
+import { Component, useCallback, useEffect, useState } from 'react';
 import imageAPI from '../services/pixabay';
 import ImageGalleryItem from './ImageGalleryItem.js';
 import Button from './Button';
@@ -28,116 +28,111 @@ const FancyLoader = styled.div({
   flexDirection: 'column',
 });
 
-class ImageGallery extends Component {
-  state = {
-    current: 'idle',
-    data: [],
-    isModalShow: false,
-    bigUrl: '',
+function ImageGallery(props) {
+  const [current, setApiState] = useState('idle');
+  const [data, setData] = useState([]);
+  const [isModalShow, setModal] = useState(false);
+  const [bigUrl, setBigUrl] = useState('');
+
+  const apiState = {
+    pending: () => setApiState('pending'),
+    succes: () => setApiState('succes'),
+    error: () => setApiState('error'),
+    idle: () => setApiState('idle'),
+    isPending: () => current === 'pending',
+    isSucces: () => current === 'succes',
+    isError: () => current === 'error',
+    isIdle: () => current === 'idle',
   };
 
-  apiState = {
-    pending: () => this.setState({ current: 'pending' }),
-    succes: () => this.setState({ current: 'succes' }),
-    error: () => this.setState({ current: 'error' }),
-    idle: () => this.setState({ current: 'idle' }),
-    isPending: () => this.state.current === 'pending',
-    isSucces: () => this.state.current === 'succes',
-    isError: () => this.state.current === 'error',
-    isIdle: () => this.state.current === 'idle',
-  };
+  useEffect(() => {
+    if (!props.name) return
 
-  async componentDidUpdate(prevProps) {
-    const prevName = prevProps.name;
-    const nextName = this.props.name;
-
-    if (prevName !== nextName) {
+    async function fetchImages() {
       try {
-        this.apiState.pending();
-        let data = await imageAPI.fetchImages(nextName, page);
-        this.setState({ data: data.hits });
-        this.apiState.succes();
+        console.log(props.name)
+        apiState.pending();
+        let fetchedData = await imageAPI.fetchImages(props.name, page);
+        setData(fetchedData.hits);
+        apiState.succes();
       } catch (error) {
-        this.apiState.error();
+        apiState.error();
       }
     }
-  }
 
-  handleClick = async (e, name) => {
+    fetchImages();
+  }, [props.name]);
+
+  const handleClick = async (e, name) => {
     e.preventDefault();
     page++;
     try {
-      this.apiState.pending();
-      let newData = await imageAPI.fetchImages(name, page);
-      this.setState(({ data }) => ({ data: [...data, ...newData.hits] }));
-      this.apiState.succes();
+      apiState.pending();
+      let newData = await imageAPI.fetchImages(props.name, page);
+      setData([...data, ...newData.hits]);
+      apiState.succes();
     } catch (error) {
-      this.apiState.error();
+      apiState.error();
     }
   };
 
-  showBigPicture = bigImg => {
-    this.setState({ isModalShow: true, bigUrl: bigImg });
+  const showBigPicture = bigImg => {
+    setBigUrl(bigImg);
+    setModal(true);
   };
 
-  hideBigPicture = () => {
-    this.setState({ isModalShow: false });
+  const hideBigPicture = () => {
+    setModal(false);
   };
 
-  closeOnEsc = event => {
-    if (event.keyCode === 27) {
-      this.setState({ isModalShow: false });
-    }
-  };
+  useEffect(() => {
+    const close = e => {
+      if (e.keyCode === 27) {
+        hideBigPicture();
+      }
+    };
+    window.addEventListener('keydown', close);
+    return () => window.removeEventListener('keydown', close);
+  }, []);
 
-  componentDidMount() {
-    window.addEventListener('keydown', this.closeOnEsc);
+  let items = data;
+  let pictures = [];
+  if (items) {
+    pictures = items.map(item => (
+      <ImageGalleryItem
+        key={nanoid()}
+        url={item.webformatURL}
+        bigImg={item.largeImageURL}
+        showBigPicture={showBigPicture}
+      />
+    ));
   }
 
-  componentWillUnmount() {
-    window.removeEventListener('keydown', this.closeOnEsc);
-  }
-
-  render() {
-    let items = this.state.data;
-    let pictures = [];
-    if (items) {
-      pictures = items.map(item => (
-        <ImageGalleryItem
-          key={nanoid()}
-          url={item.webformatURL}
-          bigImg={item.largeImageURL}
-          showBigPicture={this.showBigPicture}
-        />
-      ));
-    }
-
-    return (
-      <div>
-        {this.apiState.isPending() && (
-          <FancyLoader>
-            <FancyGallery className="gallery">{pictures}</FancyGallery>
-            <Loader />
-          </FancyLoader>
-        )}
-        {this.state.isModalShow === true && (
-          <div>
-            <Modal url={this.state.bigUrl} onClick={this.hideBigPicture} />
-            <FancyGallery className="gallery">
-              {pictures}
-              <Button onClick={event => this.handleClick(event, this.props.name)} />
-            </FancyGallery>
-          </div>
-        )}
-        {this.apiState.isSucces() && this.state.isModalShow === false && (
+  return (
+    <div>
+      {apiState.isPending() && (
+        <FancyLoader>
+          <FancyGallery className="gallery">{pictures}</FancyGallery>
+          <Loader />
+        </FancyLoader>
+      )}
+      {isModalShow === true && (
+        <div>
+          <Modal url={bigUrl} onClick={hideBigPicture} />
           <FancyGallery className="gallery">
             {pictures}
-            <Button onClick={event => this.handleClick(event, this.props.name)} />
+            <Button onClick={event => handleClick(event, props.name)} />
           </FancyGallery>
-        )}
-      </div>
-    );
-  }
+        </div>
+      )}
+      {apiState.isSucces() && isModalShow === false && (
+        <FancyGallery className="gallery">
+          {pictures}
+          <Button onClick={event => handleClick(event, props.name)} />
+        </FancyGallery>
+      )}
+    </div>
+  );
 }
 
 ImageGallery.propTypes = {
